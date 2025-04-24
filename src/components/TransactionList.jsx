@@ -1,36 +1,68 @@
 import React from 'react';
-import useTransactionStore from '../store/transactionStore';
+import { useTransactionStore } from '../store/transactionStore';
 
-function TransactionList() {
-  const transactions = useTransactionStore((state) => state.transactions);
+function TransactionList({ transactions }) {
   const deleteTransaction = useTransactionStore((state) => state.deleteTransaction);
 
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString();
+  };
+
+  const formatAmount = (amount) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    }).format(amount);
+  };
+
   return (
-    <div className="mb-4">
-      <h5>Transactions</h5>
-      <ul className="list-group">
-        {transactions.map((txn) => (
-          <li
-            key={txn.id}
-            className={`list-group-item d-flex justify-content-between align-items-center ${
-              txn.amount >= 0 ? 'list-group-item-success' : 'list-group-item-danger'
-            }`}
-          >
-            <span>{txn.title} ({txn.category})</span>
-            <div>
-              <span>₦{txn.amount}</span>
-              <button
-                className="btn btn-sm btn-outline-danger ms-2"
-                onClick={() => deleteTransaction(txn.id)}
-              >
-                ×
-              </button>
-            </div>
-          </li>
-        ))}
-      </ul>
+    <div className="transaction-list">
+      <div className="table-responsive">
+        <table className="table table-hover">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Description</th>
+              <th>Category</th>
+              <th>Amount</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {transactions.map((transaction) => (
+              <tr key={transaction.id} className={transaction.amount < 0 ? 'table-danger' : 'table-success'}>
+                <td>{formatDate(transaction.date)}</td>
+                <td>{transaction.description}</td>
+                <td>
+                  <span className="badge bg-secondary">
+                    {transaction.category}
+                  </span>
+                </td>
+                <td className={transaction.amount < 0 ? 'text-danger' : 'text-success'}>
+                  {formatAmount(transaction.amount)}
+                </td>
+                <td>
+                  <button
+                    className="btn btn-sm btn-outline-danger"
+                    onClick={() => deleteTransaction(transaction.id)}
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+            {transactions.length === 0 && (
+              <tr>
+                <td colSpan="5" className="text-center">
+                  No transactions found. Add some transactions to get started!
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
 
-export default TransactionList;
+export default TransactionList; 

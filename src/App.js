@@ -1,17 +1,44 @@
-import React from 'react'; // Import React (in case you need it)
-import './App.css'; // Custom styles
-import Header from './components/Header'; // Assuming you have a Header component
-import TransactionForm from './components/TransactionForm'; // Assuming you have a TransactionForm component
-import TransactionList from './components/TransactionList'; // Assuming you have a TransactionList component
+import React from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import './App.css';
+import TransactionForm from './components/TransactionForm';
+import TransactionList from './components/TransactionList';
+import Dashboard from './components/Dashboard';
+import { useTransactionStore } from './store/transactionStore';
 
 function App() {
+  const transactions = useTransactionStore((state) => state.transactions);
+
   return (
     <div className="App">
-      <Header />
-      <main className="container mt-4">
-        <TransactionForm />
-        <TransactionList />
-      </main>
+      <nav className="navbar navbar-dark bg-primary mb-4">
+        <div className="container">
+          <span className="navbar-brand mb-0 h1">Budgettly</span>
+        </div>
+      </nav>
+      
+      <div className="container">
+        <div className="row">
+          <div className="col-md-4">
+            <div className="card mb-4">
+              <div className="card-body">
+                <h5 className="card-title">Add Transaction</h5>
+                <TransactionForm />
+              </div>
+            </div>
+          </div>
+          
+          <div className="col-md-8">
+            <Dashboard transactions={transactions} />
+            <div className="card mt-4">
+              <div className="card-body">
+                <h5 className="card-title">Recent Transactions</h5>
+                <TransactionList transactions={transactions} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

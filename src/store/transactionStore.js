@@ -1,15 +1,24 @@
 import { create } from 'zustand';
 
-const useTransactionStore = create((set) => ({
+export const useTransactionStore = create((set) => ({
   transactions: [],
-  addTransaction: (transaction) =>
+  
+  addTransaction: (transaction) => 
     set((state) => ({
-      transactions: [...state.transactions, transaction],
+      transactions: [...state.transactions, { ...transaction, id: Date.now() }]
     })),
+    
   deleteTransaction: (id) =>
     set((state) => ({
-      transactions: state.transactions.filter((t) => t.id !== id),
+      transactions: state.transactions.filter((t) => t.id !== id)
     })),
+    
+  updateTransaction: (id, updatedTransaction) =>
+    set((state) => ({
+      transactions: state.transactions.map((t) => 
+        t.id === id ? { ...t, ...updatedTransaction } : t
+      )
+    })),
+    
+  clearTransactions: () => set({ transactions: [] })
 }));
-
-export default useTransactionStore;
